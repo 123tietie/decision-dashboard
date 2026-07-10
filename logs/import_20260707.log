@@ -1,0 +1,382 @@
+2026-07-07 13:29:42,995 - __main__ - INFO - ==================================================
+2026-07-07 13:29:42,995 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 13:29:42,995 - __main__ - INFO - ==================================================
+2026-07-07 13:29:42,995 - __main__ - INFO - 开始导入底表数据...
+2026-07-07 13:29:47,107 - scripts.db_connector - ERROR - 数据库连接失败: connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+2026-07-07 13:29:47,107 - __main__ - ERROR - ❌ 流程执行失败: connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+2026-07-07 13:44:41,948 - __main__ - INFO - ==================================================
+2026-07-07 13:44:41,953 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 13:44:41,954 - __main__ - INFO - ==================================================
+2026-07-07 13:44:41,954 - __main__ - INFO - 开始导入底表数据...
+2026-07-07 13:44:42,424 - scripts.db_connector - ERROR - 数据库连接失败: connection to server at "localhost" (::1), port 3306 failed: received invalid response to SSL negotiation: J
+
+2026-07-07 13:44:42,424 - __main__ - ERROR - ❌ 流程执行失败: connection to server at "localhost" (::1), port 3306 failed: received invalid response to SSL negotiation: J
+
+2026-07-07 13:44:55,122 - __main__ - INFO - ==================================================
+2026-07-07 13:44:55,123 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 13:44:55,123 - __main__ - INFO - ==================================================
+2026-07-07 13:44:55,123 - __main__ - INFO - 开始导入底表数据...
+2026-07-07 13:44:55,137 - scripts.db_connector - ERROR - 数据库连接失败: connection to server at "localhost" (::1), port 3306 failed: received invalid response to SSL negotiation: J
+
+2026-07-07 13:44:55,137 - __main__ - ERROR - ❌ 流程执行失败: connection to server at "localhost" (::1), port 3306 failed: received invalid response to SSL negotiation: J
+
+2026-07-07 14:36:07,093 - __main__ - INFO - ==================================================
+2026-07-07 14:36:07,094 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 14:36:07,094 - __main__ - INFO - ==================================================
+2026-07-07 14:36:07,094 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 14:36:07,154 - scripts.db_connector - ERROR - 数据库连接失败: connection to server at "localhost" (::1), port 3306 failed: received invalid response to SSL negotiation: J
+
+2026-07-07 14:36:07,154 - __main__ - ERROR - ❌ 流程执行失败: connection to server at "localhost" (::1), port 3306 failed: received invalid response to SSL negotiation: J
+
+2026-07-07 14:36:40,726 - __main__ - INFO - ==================================================
+2026-07-07 14:36:40,727 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 14:36:40,727 - __main__ - INFO - ==================================================
+2026-07-07 14:36:40,727 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 14:36:40,880 - scripts.db_connector - ERROR - 数据库连接失败: (1049, "Unknown database 'your_database_name'")
+2026-07-07 14:36:40,880 - __main__ - ERROR - ❌ 流程执行失败: (1049, "Unknown database 'your_database_name'")
+2026-07-07 14:36:55,572 - __main__ - INFO - ==================================================
+2026-07-07 14:36:55,572 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 14:36:55,572 - __main__ - INFO - ==================================================
+2026-07-07 14:36:55,572 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 14:36:55,643 - scripts.db_connector - ERROR - 数据库连接失败: (1049, "Unknown database 'your_database_name'")
+2026-07-07 14:36:55,643 - __main__ - ERROR - ❌ 流程执行失败: (1049, "Unknown database 'your_database_name'")
+2026-07-07 14:38:10,048 - __main__ - INFO - ==================================================
+2026-07-07 14:38:10,049 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 14:38:10,049 - __main__ - INFO - ==================================================
+2026-07-07 14:38:10,050 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 14:38:12,816 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 14:38:12,817 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 14:38:12,818 - scripts.data_importer - ERROR - 导入 dpad_20260701_20260707.csv 失败: 文件不存在: ./data/input/dpad_20260701_20260707.csv
+2026-07-07 14:38:12,819 - __main__ - ERROR - ❌ 流程执行失败: 文件不存在: ./data/input/dpad_20260701_20260707.csv
+2026-07-07 14:38:12,820 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 14:38:17,169 - __main__ - INFO - ==================================================
+2026-07-07 14:38:17,169 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 14:38:17,169 - __main__ - INFO - ==================================================
+2026-07-07 14:38:17,169 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 14:38:18,811 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 14:38:18,811 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 14:38:18,812 - scripts.data_importer - ERROR - 导入 dpad_20260701_20260707.csv 失败: 文件不存在: ./data/input/dpad_20260701_20260707.csv
+2026-07-07 14:38:18,812 - __main__ - ERROR - ❌ 流程执行失败: 文件不存在: ./data/input/dpad_20260701_20260707.csv
+2026-07-07 14:38:18,814 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 14:39:31,903 - __main__ - INFO - ==================================================
+2026-07-07 14:39:31,904 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 14:39:31,904 - __main__ - INFO - ==================================================
+2026-07-07 14:39:31,904 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 14:39:32,080 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 14:39:32,081 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 14:39:32,081 - scripts.data_importer - ERROR - 导入 dpad_20260701_20260707.csv 失败: 文件不存在: ./data/input/dpad_20260701_20260707.csv
+2026-07-07 14:39:32,081 - __main__ - ERROR - ❌ 流程执行失败: 文件不存在: ./data/input/dpad_20260701_20260707.csv
+2026-07-07 14:39:32,082 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 14:53:58,410 - __main__ - INFO - ==================================================
+2026-07-07 14:53:58,411 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 14:53:58,411 - __main__ - INFO - ==================================================
+2026-07-07 14:53:58,411 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 14:53:58,836 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 14:53:58,836 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 14:53:59,289 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 14:54:06,549 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 14:54:06,959 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 14:54:09,698 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 14:54:09,715 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 14:54:09,913 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 14:54:09,914 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 14:54:09,914 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 14:54:09,914 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 14:54:09,980 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 14:54:10,004 - scripts.etl_refresh - ERROR - SQL执行失败: (1146, "Table 'mysql.decision_inflow_weekly' doesn't exist")
+2026-07-07 14:54:10,005 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': False}
+2026-07-07 14:54:10,005 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': False}
+2026-07-07 14:54:10,005 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 14:54:10,005 - __main__ - INFO - ==================================================
+2026-07-07 14:54:10,005 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 14:54:10,005 - __main__ - INFO - ==================================================
+2026-07-07 14:54:10,007 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 14:54:10,009 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 14:58:59,917 - __main__ - INFO - ==================================================
+2026-07-07 14:58:59,917 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 14:58:59,918 - __main__ - INFO - ==================================================
+2026-07-07 14:58:59,918 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 14:59:00,225 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 14:59:00,226 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 14:59:00,942 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 14:59:05,534 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 14:59:05,668 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 14:59:07,861 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 14:59:07,878 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 14:59:08,109 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 14:59:08,109 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 14:59:08,110 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 14:59:08,110 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 14:59:08,182 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 14:59:08,191 - scripts.etl_refresh - ERROR - SQL执行失败: (1146, "Table 'mysql.decision_inflow_weekly' doesn't exist")
+2026-07-07 14:59:08,195 - scripts.etl_refresh - ERROR - SQL执行失败: (1146, "Table 'mysql.decision_outflow_weekly' doesn't exist")
+2026-07-07 14:59:08,200 - scripts.etl_refresh - ERROR - SQL执行失败: (1146, "Table 'mysql.payment_inflow_weekly' doesn't exist")
+2026-07-07 14:59:08,204 - scripts.etl_refresh - ERROR - SQL执行失败: (1146, "Table 'mysql.payment_outflow_weekly' doesn't exist")
+2026-07-07 14:59:08,204 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': False, 'decision_outflow': False, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 14:59:08,205 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': False, 'decision_outflow': False, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 14:59:08,205 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 14:59:08,205 - __main__ - INFO - ==================================================
+2026-07-07 14:59:08,205 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 14:59:08,205 - __main__ - INFO - ==================================================
+2026-07-07 14:59:08,206 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 14:59:08,207 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:14:10,400 - __main__ - INFO - ==================================================
+2026-07-07 16:14:10,401 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 16:14:10,401 - __main__ - INFO - ==================================================
+2026-07-07 16:14:10,401 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 16:14:10,621 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:14:10,622 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 16:14:11,266 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 16:14:17,123 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 16:14:17,619 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 16:14:21,450 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 16:14:21,474 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 16:14:21,775 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 16:14:21,776 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:14:21,776 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:14:21,776 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 16:14:21,838 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:14:22,657 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:14:22,720 - scripts.etl_refresh - ERROR - SQL执行失败: (1054, "Unknown column '套数' in 'field list'")
+2026-07-07 16:14:22,761 - scripts.etl_refresh - ERROR - SQL执行失败: (1054, "Unknown column '节点处理时长' in 'field list'")
+2026-07-07 16:14:22,800 - scripts.etl_refresh - ERROR - SQL执行失败: (1054, "Unknown column '节点处理时长' in 'field list'")
+2026-07-07 16:14:22,801 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': True, 'decision_outflow': False, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:14:22,801 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': True, 'decision_outflow': False, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:14:22,801 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 16:14:22,801 - __main__ - INFO - ==================================================
+2026-07-07 16:14:22,802 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 16:14:22,802 - __main__ - INFO - ==================================================
+2026-07-07 16:14:22,803 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:14:22,804 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:17:08,865 - __main__ - INFO - ==================================================
+2026-07-07 16:17:08,865 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 16:17:08,866 - __main__ - INFO - ==================================================
+2026-07-07 16:17:08,866 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 16:17:09,065 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:17:09,066 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 16:17:09,555 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 16:17:15,584 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 16:17:15,735 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 16:17:18,144 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 16:17:18,174 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 16:17:18,534 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 16:17:18,535 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:17:18,535 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:17:18,535 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 16:17:18,608 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:17:20,263 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:17:21,369 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:17:21,427 - scripts.etl_refresh - ERROR - SQL执行失败: (1054, "Unknown column '节点处理时长' in 'field list'")
+2026-07-07 16:17:21,486 - scripts.etl_refresh - ERROR - SQL执行失败: (1054, "Unknown column '节点处理时长' in 'field list'")
+2026-07-07 16:17:21,487 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:17:21,487 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:17:21,487 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 16:17:21,487 - __main__ - INFO - ==================================================
+2026-07-07 16:17:21,488 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 16:17:21,488 - __main__ - INFO - ==================================================
+2026-07-07 16:17:21,490 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:17:21,491 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:21:04,845 - __main__ - INFO - ==================================================
+2026-07-07 16:21:04,846 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 16:21:04,846 - __main__ - INFO - ==================================================
+2026-07-07 16:21:04,847 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 16:21:05,772 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:21:05,772 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 16:21:06,343 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 16:21:11,395 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 16:21:11,538 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 16:21:13,584 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 16:21:13,601 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 16:21:13,900 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 16:21:13,901 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:21:13,901 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:21:13,901 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 16:21:13,981 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:21:15,007 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:21:15,627 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:21:15,694 - scripts.etl_refresh - ERROR - SQL执行失败: (1292, "Truncated incorrect datetime value: '2026-06-29 14:44:30.0'")
+2026-07-07 16:21:15,749 - scripts.etl_refresh - ERROR - SQL执行失败: (1292, "Incorrect datetime value: '2026-06-03\n2026-06-03'")
+2026-07-07 16:21:15,749 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:21:15,750 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:21:15,750 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 16:21:15,750 - __main__ - INFO - ==================================================
+2026-07-07 16:21:15,750 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 16:21:15,750 - __main__ - INFO - ==================================================
+2026-07-07 16:21:15,752 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:21:15,753 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:22:21,349 - __main__ - INFO - ==================================================
+2026-07-07 16:22:21,350 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 16:22:21,350 - __main__ - INFO - ==================================================
+2026-07-07 16:22:21,350 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 16:22:21,606 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:22:21,607 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 16:22:22,037 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 16:22:28,837 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 16:22:29,093 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 16:22:33,468 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 16:22:33,500 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 16:22:34,145 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 16:22:34,145 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:22:34,146 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:22:34,146 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 16:22:34,264 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:22:35,775 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:22:36,657 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:22:36,899 - scripts.etl_refresh - ERROR - SQL执行失败: (1411, "Incorrect datetime value: '' for function str_to_date")
+2026-07-07 16:22:36,959 - scripts.etl_refresh - ERROR - SQL执行失败: (1292, "Incorrect datetime value: '2026-06-032026-06-03'")
+2026-07-07 16:22:36,961 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:22:36,961 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:22:36,961 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 16:22:36,961 - __main__ - INFO - ==================================================
+2026-07-07 16:22:36,962 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 16:22:36,962 - __main__ - INFO - ==================================================
+2026-07-07 16:22:36,964 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:22:36,965 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:24:30,180 - __main__ - INFO - ==================================================
+2026-07-07 16:24:30,181 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 16:24:30,182 - __main__ - INFO - ==================================================
+2026-07-07 16:24:30,182 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 16:24:30,493 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:24:30,493 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 16:24:31,229 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 16:24:38,861 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 16:24:39,003 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 16:24:41,527 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 16:24:41,547 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 16:24:41,826 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 16:24:41,827 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:24:41,827 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:24:41,827 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 16:24:41,897 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:24:42,893 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:24:44,076 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:24:44,276 - scripts.etl_refresh - ERROR - SQL执行失败: (1411, "Incorrect datetime value: '' for function str_to_date")
+2026-07-07 16:24:44,333 - scripts.etl_refresh - ERROR - SQL执行失败: (1292, "Incorrect datetime value: '2026-06-032026-06-03'")
+2026-07-07 16:24:44,334 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:24:44,335 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': False, 'payment_outflow': False}
+2026-07-07 16:24:44,335 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 16:24:44,335 - __main__ - INFO - ==================================================
+2026-07-07 16:24:44,335 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 16:24:44,335 - __main__ - INFO - ==================================================
+2026-07-07 16:24:44,337 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:24:44,338 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:30:53,032 - __main__ - INFO - ==================================================
+2026-07-07 16:30:53,033 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 16:30:53,033 - __main__ - INFO - ==================================================
+2026-07-07 16:30:53,033 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 16:30:53,260 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:30:53,260 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 16:30:53,680 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 16:30:59,441 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 16:30:59,616 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 16:31:02,030 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 16:31:02,053 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 16:31:02,296 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 16:31:02,296 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:31:02,296 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:31:02,297 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 16:31:02,375 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:31:03,165 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:31:03,662 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:31:03,818 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:31:03,853 - scripts.etl_refresh - ERROR - SQL执行失败: (1060, "Duplicate column name '付款申请日期'")
+2026-07-07 16:31:03,853 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': True, 'payment_outflow': False}
+2026-07-07 16:31:03,854 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': True, 'payment_outflow': False}
+2026-07-07 16:31:03,854 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 16:31:03,854 - __main__ - INFO - ==================================================
+2026-07-07 16:31:03,854 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 16:31:03,854 - __main__ - INFO - ==================================================
+2026-07-07 16:31:03,855 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:31:03,856 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:31:57,277 - __main__ - INFO - ==================================================
+2026-07-07 16:31:57,278 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 16:31:57,279 - __main__ - INFO - ==================================================
+2026-07-07 16:31:57,279 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 16:31:57,532 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:31:57,532 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 16:31:57,976 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 16:32:02,810 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 16:32:03,088 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 16:32:05,762 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 16:32:05,781 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 16:32:06,099 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 16:32:06,100 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:32:06,100 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:32:06,100 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 16:32:06,168 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:32:07,231 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:32:07,746 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:32:07,969 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:32:08,009 - scripts.etl_refresh - ERROR - SQL执行失败: (1411, "Incorrect datetime value: '2026-06-032026-06-' for function str_to_date")
+2026-07-07 16:32:08,010 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': True, 'payment_outflow': False}
+2026-07-07 16:32:08,010 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': True, 'payment_outflow': False}
+2026-07-07 16:32:08,010 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 16:32:08,010 - __main__ - INFO - ==================================================
+2026-07-07 16:32:08,011 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 16:32:08,011 - __main__ - INFO - ==================================================
+2026-07-07 16:32:08,011 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:32:08,012 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:33:07,938 - __main__ - INFO - ==================================================
+2026-07-07 16:33:07,939 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 16:33:07,939 - __main__ - INFO - ==================================================
+2026-07-07 16:33:07,939 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 16:33:08,185 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:33:08,185 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 16:33:08,686 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 16:33:13,119 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 16:33:13,263 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 16:33:15,532 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 16:33:15,553 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 16:33:15,894 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 16:33:15,894 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:33:15,894 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:33:15,894 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 16:33:15,967 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:33:16,885 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:33:17,341 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:33:17,551 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:33:17,588 - scripts.etl_refresh - ERROR - SQL执行失败: (1411, "Incorrect datetime value: '2026-06-032026-06-0' for function str_to_date")
+2026-07-07 16:33:17,589 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': True, 'payment_outflow': False}
+2026-07-07 16:33:17,589 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': True, 'payment_outflow': False}
+2026-07-07 16:33:17,589 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 16:33:17,590 - __main__ - INFO - ==================================================
+2026-07-07 16:33:17,590 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 16:33:17,590 - __main__ - INFO - ==================================================
+2026-07-07 16:33:17,592 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:33:17,593 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:33:56,722 - __main__ - INFO - ==================================================
+2026-07-07 16:33:56,723 - __main__ - INFO - 开始执行驾驶舱数据更新流程
+2026-07-07 16:33:56,723 - __main__ - INFO - ==================================================
+2026-07-07 16:33:56,723 - __main__ - INFO - [1/3] 开始导入底表数据...
+2026-07-07 16:33:56,923 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:33:56,923 - scripts.data_importer - INFO - 开始导入第 20260701 - 20260707 周数据
+2026-07-07 16:33:57,532 - scripts.data_importer - INFO - 读取 dpad704.csv: 28198 条记录
+2026-07-07 16:34:04,766 - scripts.db_connector - INFO - 成功写入 28198 条记录到 dpad_table
+2026-07-07 16:34:04,940 - scripts.data_importer - INFO - 读取 付款704.csv: 15850 条记录
+2026-07-07 16:34:12,432 - scripts.db_connector - INFO - 成功写入 15850 条记录到 payment_table
+2026-07-07 16:34:12,471 - scripts.data_importer - INFO - 读取 图远704.csv: 1225 条记录
+2026-07-07 16:34:13,240 - scripts.db_connector - INFO - 成功写入 1225 条记录到 tuyuan_table
+2026-07-07 16:34:13,241 - scripts.data_importer - INFO - 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:34:13,242 - __main__ - INFO - [1/3] 导入完成: {'dpad_table': 28198, 'payment_table': 15850, 'tuyuan_table': 1225}
+2026-07-07 16:34:13,242 - __main__ - INFO - [2/3] 开始刷新中间表...
+2026-07-07 16:34:13,350 - scripts.db_connector - INFO - MySQL数据库连接成功
+2026-07-07 16:34:14,520 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:34:15,122 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:34:15,426 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:34:15,668 - scripts.etl_refresh - INFO - SQL执行成功
+2026-07-07 16:34:15,668 - scripts.etl_refresh - INFO - ETL刷新完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': True, 'payment_outflow': True}
+2026-07-07 16:34:15,669 - __main__ - INFO - [2/3] ETL完成: {'decision_inflow': True, 'decision_outflow': True, 'payment_inflow': True, 'payment_outflow': True}
+2026-07-07 16:34:15,669 - __main__ - INFO - [3/3] 验证中间表数据...
+2026-07-07 16:34:15,669 - __main__ - INFO - ==================================================
+2026-07-07 16:34:15,669 - __main__ - INFO - ✅ 驾驶舱数据更新完成！
+2026-07-07 16:34:15,669 - __main__ - INFO - ==================================================
+2026-07-07 16:34:15,671 - scripts.db_connector - INFO - 数据库连接已关闭
+2026-07-07 16:34:15,672 - scripts.db_connector - INFO - 数据库连接已关闭
