@@ -5,6 +5,9 @@ REM ============================================
 REM 双击运行即可创建定时任务
 REM 默认每小时执行一次
 REM
+REM 数据源: C:\Users\hc\Desktop\决策+付款\ 目录下最新的 .xlsx
+REM 脚本会自动检测最新 Excel 文件并同步到 GitHub
+REM
 REM 删除任务: schtasks /delete /tn "DashboardDataSync" /f
 REM ============================================
 
@@ -29,25 +32,27 @@ REM ---- 配置区结束 ----
 
 echo Python:   %PYTHON_PATH%
 echo 项目目录: %PROJECT_DIR%
+echo 数据源:   桌面\决策+付款\ 最新 Excel (自动检测)
 echo 频率:     每小时
 echo.
 
-REM 创建任务
-schtasks /create /tn "DashboardDataSync" /tr "%PYTHON_PATH% %PROJECT_DIR%\sync_data.py --etl" %SCHEDULE% /f
+REM 创建任务（调用 sync_from_excel.py，自动检测桌面最新 Excel）
+schtasks /create /tn "DashboardDataSync" /tr "%PYTHON_PATH% %PROJECT_DIR%\sync_from_excel.py" %SCHEDULE% /f
 
 if %errorlevel% equ 0 (
     echo.
-    echo ✅ 定时任务创建成功！
+    echo [OK] 定时任务创建成功！
     echo.
     echo 任务名: DashboardDataSync
-    echo 频率:   每小时自动执行（含ETL刷新）
+    echo 频率:   每小时自动执行
+    echo 流程:   读取桌面Excel -> 生成CSV -> 推送GitHub -> Streamlit自动更新
     echo.
     echo 查看任务: schtasks /query /tn "DashboardDataSync"
     echo 手动执行: schtasks /run /tn "DashboardDataSync"
     echo 删除任务: schtasks /delete /tn "DashboardDataSync" /f
 ) else (
     echo.
-    echo ❌ 创建失败，请以管理员身份运行
+    echo [FAIL] 创建失败，请以管理员身份运行
 )
 
 echo.
