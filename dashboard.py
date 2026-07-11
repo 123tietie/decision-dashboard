@@ -148,6 +148,7 @@ with st.spinner("加载数据中..."):
 
     df_outflow["组别"] = df_outflow["申请人"].apply(get_group)
     df_outflow["区域"] = df_outflow["组别"].apply(get_region)
+    df_outflow["所属部门"] = df_outflow["组别"]
 
     df_payment_in["组别"] = df_payment_in["项目经理名称"].apply(get_group)
     df_payment_in["区域"] = df_payment_in["组别"].apply(get_region)
@@ -455,14 +456,14 @@ with tab2:
 
     # 1. 决策流出条数（按月度，按项目经理）
     make_pivot_count(
-        df_outflow_f, "申请人", "主体",
+        df_outflow_f, "申请人", "所属部门",
         "决策编号", "nunique",
         "1. 各项目经理决策流出条数（月度）"
     )
 
     # 2. 决策流出套数（按月度，按项目经理）
     make_pivot_count(
-        df_outflow_f, "申请人", "主体",
+        df_outflow_f, "申请人", "所属部门",
         "套数", "sum",
         "2. 各项目经理决策流出套数（月度）"
     )
