@@ -1,6 +1,6 @@
-streamlit
-pandas
+streamlit>=1.30
+pandas>=2.0
 pymysql
 plotly
-sqlalchemy
+sqlalchemy>=2.0
 python-dotenv
