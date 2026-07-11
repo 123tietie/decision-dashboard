@@ -14,30 +14,34 @@ from pathlib import Path
 st.set_page_config(page_title="决策付款驾驶舱", layout="wide")
 
 # ============================================================
-# 数据库连接（本地） / CSV模式（Streamlit Cloud）
+# 数据加载：本地用数据库，云端用CSV（自动检测）
 # ============================================================
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "user": os.getenv("DB_USER", "root"),
-    "password": os.getenv("DB_PASSWORD", "123456"),
-    "database": os.getenv("DB_NAME", "mysql"),
-    "charset": "utf8mb4"
-}
-
-DATABASE_URL = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}/{DB_CONFIG['database']}?charset=utf8mb4"
-
-# 尝试连接数据库，失败则切换到 CSV 模式
-DB_MODE = True
-engine = None
-try:
-    engine = create_engine(DATABASE_URL)
-    with engine.connect() as conn:
-        conn.execute(text("SELECT 1"))
-except Exception:
-    DB_MODE = False
-    engine = None
-
 CSV_DIR = Path("data/export")
+
+# 检测是否在 Streamlit Cloud 上（有 data/export 目录且无 DB 环境变量时直接用 CSV）
+DB_MODE = False
+engine = None
+
+# 只有本地环境（有 .env 文件）才尝试连数据库
+if Path(".env").exists():
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+        DB_CONFIG = {
+            "host": os.getenv("DB_HOST", "localhost"),
+            "user": os.getenv("DB_USER", "root"),
+            "password": os.getenv("DB_PASSWORD", "123456"),
+            "database": os.getenv("DB_NAME", "mysql"),
+            "charset": "utf8mb4"
+        }
+        DATABASE_URL = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}/{DB_CONFIG['database']}?charset=utf8mb4"
+        engine = create_engine(DATABASE_URL, connect_args={"connect_timeout": 5})
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        DB_MODE = True
+    except Exception:
+        DB_MODE = False
+        engine = None
 
 
 @st.cache_data(ttl=3600)
