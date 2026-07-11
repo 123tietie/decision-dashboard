@@ -1,10 +1,12 @@
 # dashboard.py
+import os
 import streamlit as st
 import pandas as pd
 import pymysql
 import plotly.express as px
 import plotly.graph_objects as go
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from pathlib import Path
 
 # ============================================================
 # 页面配置
@@ -12,28 +14,46 @@ from sqlalchemy import create_engine
 st.set_page_config(page_title="决策付款驾驶舱", layout="wide")
 
 # ============================================================
-# 数据库连接
+# 数据库连接（本地） / CSV模式（Streamlit Cloud）
 # ============================================================
 DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "123456",
-    "database": "mysql",
+    "host": os.getenv("DB_HOST", "localhost"),
+    "user": os.getenv("DB_USER", "root"),
+    "password": os.getenv("DB_PASSWORD", "123456"),
+    "database": os.getenv("DB_NAME", "mysql"),
     "charset": "utf8mb4"
 }
 
-# 创建 SQLAlchemy 引擎（解决 pandas 警告）
 DATABASE_URL = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}/{DB_CONFIG['database']}?charset=utf8mb4"
-engine = create_engine(DATABASE_URL)
+
+# 尝试连接数据库，失败则切换到 CSV 模式
+DB_MODE = True
+engine = None
+try:
+    engine = create_engine(DATABASE_URL)
+    with engine.connect() as conn:
+        conn.execute(text("SELECT 1"))
+except Exception:
+    DB_MODE = False
+    engine = None
+
+CSV_DIR = Path("data/export")
 
 
 @st.cache_data(ttl=3600)
 def load_data():
-    # 加载四张明细表
-    df_inflow = pd.read_sql("SELECT * FROM v_decision_daily", engine)
-    df_outflow = pd.read_sql("SELECT * FROM v_decision_outflow_daily", engine)
-    df_payment_in = pd.read_sql("SELECT * FROM v_payment_inflow_daily", engine)
-    df_payment_out = pd.read_sql("SELECT * FROM v_payment_outflow_daily", engine)
+    if DB_MODE:
+        # ===== 本地模式：直连数据库 =====
+        df_inflow = pd.read_sql("SELECT * FROM v_decision_daily", engine)
+        df_outflow = pd.read_sql("SELECT * FROM v_decision_outflow_daily", engine)
+        df_payment_in = pd.read_sql("SELECT * FROM v_payment_inflow_daily", engine)
+        df_payment_out = pd.read_sql("SELECT * FROM v_payment_outflow_daily", engine)
+    else:
+        # ===== Cloud模式：读CSV =====
+        df_inflow = pd.read_csv(CSV_DIR / "v_decision_daily.csv")
+        df_outflow = pd.read_csv(CSV_DIR / "v_decision_outflow_daily.csv")
+        df_payment_in = pd.read_csv(CSV_DIR / "v_payment_inflow_daily.csv")
+        df_payment_out = pd.read_csv(CSV_DIR / "v_payment_outflow_daily.csv")
 
     # 统一字段名
     df_inflow = df_inflow.rename(columns={
@@ -98,6 +118,12 @@ def load_data():
 # ============================================================
 with st.spinner("加载数据中..."):
     df_inflow, df_outflow, df_payment_in, df_payment_out = load_data()
+
+# 数据源标识
+if DB_MODE:
+    st.sidebar.info("🔗 数据源：本地数据库")
+else:
+    st.sidebar.info("📁 数据源：CSV文件")
 
 # ============================================================
 # 侧边栏筛选器
@@ -326,4 +352,4 @@ st.dataframe(detail_df, use_container_width=True, height=400)
 # 底部
 # ============================================================
 st.markdown("---")
-st.caption(f"数据更新时间：{pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')} | 数据来源：MySQL")
+st.caption(f"数据更新时间：{pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')} | 数据来源：{'MySQL' if DB_MODE else 'CSV'}")
