@@ -43,6 +43,7 @@ EXPORT_VIEWS = [
     ("v_decision_outflow_daily", "v_decision_outflow_daily.csv"),
     ("v_payment_inflow_daily",   "v_payment_inflow_daily.csv"),
     ("v_payment_outflow_daily",  "v_payment_outflow_daily.csv"),
+    ("v_终表",  "v_终表"),
 ]
 
 # CSV 输出目录

@@ -22,6 +22,7 @@ engine = None
 if Path(".env").exists():
     try:
         from dotenv import load_dotenv
+
         load_dotenv()
         DB_CONFIG = {
             "host": os.getenv("DB_HOST", "localhost"),
@@ -47,11 +48,13 @@ def load_data():
         df_outflow = pd.read_sql("SELECT * FROM v_decision_outflow_daily", engine)
         df_payment_in = pd.read_sql("SELECT * FROM v_payment_inflow_daily", engine)
         df_payment_out = pd.read_sql("SELECT * FROM v_payment_outflow_daily", engine)
+        df_final = pd.read_sql("SELECT * FROM v_终表", engine)
     else:
         df_inflow = pd.read_csv(CSV_DIR / "v_decision_daily.csv")
         df_outflow = pd.read_csv(CSV_DIR / "v_decision_outflow_daily.csv")
         df_payment_in = pd.read_csv(CSV_DIR / "v_payment_inflow_daily.csv")
         df_payment_out = pd.read_csv(CSV_DIR / "v_payment_outflow_daily.csv")
+        df_final = pd.read_csv(CSV_DIR / "v_终表.csv")
 
     # ---- 日期解析 ----
     for df in [df_inflow, df_outflow]:
@@ -66,21 +69,39 @@ def load_data():
     if "图远付款时间" in df_payment_out.columns:
         df_payment_out["图远付款时间"] = pd.to_datetime(df_payment_out["图远付款时间"], errors="coerce")
 
+    # ---- 终表处理：直接使用现有的"据今天天数"字段 ----
+    if "据今天天数" in df_final.columns:
+        df_final["据今天天数"] = pd.to_numeric(df_final["据今天天数"], errors="coerce").fillna(0)
+
+        def get_warning_level(days):
+            if pd.isna(days):
+                return "未知"
+            elif days >= 90:
+                return "红色预警"
+            elif days >= 30:
+                return "橙色预警"
+            else:
+                return "绿色预警"
+
+        df_final["预警级别"] = df_final["据今天天数"].apply(get_warning_level)
+    else:
+        df_final["预警级别"] = "未知"
+
     # ---- 数值列 ----
     df_inflow["套数"] = pd.to_numeric(df_inflow["套数"], errors="coerce").fillna(0)
     df_outflow["套数"] = pd.to_numeric(df_outflow["套数"], errors="coerce").fillna(0)
     df_payment_in["回购金额"] = pd.to_numeric(df_payment_in["回购金额"], errors="coerce").fillna(0)
     df_payment_out["回购金额"] = pd.to_numeric(df_payment_out["回购金额"], errors="coerce").fillna(0)
 
-    # ---- 决策审批时长（审批完成时间 - 提交申请时间，单位：天）----
+    # ---- 决策审批时长 ----
     df_outflow["决策审批时长"] = (
-        df_outflow["审批完成时间"] - df_outflow["提交申请时间"]
-    ).dt.total_seconds() / 86400
+                                         df_outflow["审批完成时间"] - df_outflow["提交申请时间"]
+                                 ).dt.total_seconds() / 86400
 
-    # ---- 付款时长（有效付款时间 - 付款申请时间，单位：天）----
+    # ---- 付款时长 ----
     df_payment_out["付款时长"] = (
-        df_payment_out["有效付款时间"] - df_payment_out["付款申请时间"]
-    ).dt.total_seconds() / 86400
+                                         df_payment_out["有效付款时间"] - df_payment_out["付款申请时间"]
+                                 ).dt.total_seconds() / 86400
 
     # ---- 提取月份 ----
     df_inflow["月份"] = df_inflow["提交申请时间"].dt.strftime("%Y年%m月")
@@ -88,13 +109,13 @@ def load_data():
     df_payment_in["月份"] = df_payment_in["付款申请时间"].dt.strftime("%Y年%m月")
     df_payment_out["月份"] = df_payment_out["有效付款时间"].dt.strftime("%Y年%m月")
 
-    # ---- 提取年份（用于透视表筛选2026年）----
+    # ---- 提取年份 ----
     df_inflow["年份"] = df_inflow["提交申请时间"].dt.year
     df_outflow["年份"] = df_outflow["审批完成时间"].dt.year
     df_payment_in["年份"] = df_payment_in["付款申请时间"].dt.year
     df_payment_out["年份"] = df_payment_out["有效付款时间"].dt.year
 
-    return df_inflow, df_outflow, df_payment_in, df_payment_out
+    return df_inflow, df_outflow, df_payment_in, df_payment_out, df_final
 
 
 # ============================================================
@@ -121,7 +142,6 @@ ALL_REGIONS = ["山西", "陕西"]
 
 
 def get_group(name):
-    """根据人名匹配组别（支持后缀匹配，如 '白昊昊-晋城宏达' → '事业二部三组'）"""
     if pd.isna(name) or not str(name).strip():
         return "其他"
     name_str = str(name)
@@ -140,7 +160,7 @@ def get_region(group):
 # 加载数据
 # ============================================================
 with st.spinner("加载数据中..."):
-    df_inflow, df_outflow, df_payment_in, df_payment_out = load_data()
+    df_inflow, df_outflow, df_payment_in, df_payment_out, df_final = load_data()
 
     # 应用组别/区域映射
     df_inflow["组别"] = df_inflow["申请人"].apply(get_group)
@@ -156,6 +176,11 @@ with st.spinner("加载数据中..."):
     df_payment_out["组别"] = df_payment_out["项目经理名称"].apply(get_group)
     df_payment_out["区域"] = df_payment_out["组别"].apply(get_region)
 
+    # 终表应用组别/区域映射
+    if "项目经理名称" in df_final.columns:
+        df_final["组别"] = df_final["项目经理名称"].apply(get_group)
+        df_final["区域"] = df_final["组别"].apply(get_region)
+
 # 数据源标识
 if DB_MODE:
     st.sidebar.info("数据源：本地数据库")
@@ -167,13 +192,7 @@ else:
 # ============================================================
 st.sidebar.title("筛选器")
 
-# 区域筛选
 selected_regions = st.sidebar.multiselect("区域", ALL_REGIONS, default=ALL_REGIONS)
-
-# 组别筛选
-group_options = [g for g in ALL_GROUPS if REGION_MAP.get(g, "") in selected_regions]
-if not group_options:
-    group_options = ALL_GROUPS
 selected_groups = st.sidebar.multiselect("组别", ALL_GROUPS, default=ALL_GROUPS)
 
 
@@ -195,23 +214,21 @@ df_inflow_f = filter_df(df_inflow)
 df_outflow_f = filter_df(df_outflow)
 df_payment_in_f = filter_df(df_payment_in)
 df_payment_out_f = filter_df(df_payment_out)
+df_final_f = filter_df(df_final)
 
 # ============================================================
 # 页面 Tab
 # ============================================================
-tab1, tab2 = st.tabs(["驾驶舱", "数据透视表"])
+tab1, tab2, tab3 = st.tabs(["驾驶舱", "数据透视表", "预警机制"])
 
 # ============================================================
 # 第一页：驾驶舱
 # ============================================================
 with tab1:
-    # ===== 一、核心指标 =====
     st.markdown("## 核心指标")
 
-    # --- 决策情况 ---
     st.markdown("### 决策情况")
     col1, col2, col3, col4, col5 = st.columns(5)
-
     with col1:
         val = df_inflow_f["决策编号"].nunique() if not df_inflow_f.empty else 0
         st.metric("决策流入条数", f"{val:,}")
@@ -225,13 +242,12 @@ with tab1:
         val = df_outflow_f["套数"].sum() if not df_outflow_f.empty else 0
         st.metric("决策流出套数", f"{val:,.0f}")
     with col5:
-        val = df_outflow_f["决策审批时长"].mean() if not df_outflow_f.empty and "决策审批时长" in df_outflow_f.columns else 0
+        val = df_outflow_f[
+            "决策审批时长"].mean() if not df_outflow_f.empty and "决策审批时长" in df_outflow_f.columns else 0
         st.metric("决策审批时长", f"{val:.1f} 天")
 
-    # --- 付款情况 ---
     st.markdown("### 付款情况")
     col6, col7, col8, col9, col10 = st.columns(5)
-
     with col6:
         val = df_payment_in_f["回购业务编号"].nunique() if not df_payment_in_f.empty else 0
         st.metric("付款流入条数", f"{val:,}")
@@ -245,21 +261,21 @@ with tab1:
         val = len(df_payment_out_f) if not df_payment_out_f.empty else 0
         st.metric("付款流出套数", f"{val:,}")
     with col10:
-        val = df_payment_out_f["付款时长"].mean() if not df_payment_out_f.empty and "付款时长" in df_payment_out_f.columns else 0
+        val = df_payment_out_f[
+            "付款时长"].mean() if not df_payment_out_f.empty and "付款时长" in df_payment_out_f.columns else 0
         st.metric("付款时长", f"{val:.1f} 天")
 
-    # ===== 二、趋势分析 =====
     st.markdown("---")
     st.markdown("## 趋势分析")
 
     col11, col12 = st.columns(2)
-
     with col11:
-        # 决策流入流出套数月度折线图
         _in = df_inflow_f.dropna(subset=["月份"]) if not df_inflow_f.empty else df_inflow_f
         _out = df_outflow_f.dropna(subset=["月份"]) if not df_outflow_f.empty else df_outflow_f
-        inflow_monthly = _in.groupby("月份")["套数"].sum().reset_index() if not _in.empty else pd.DataFrame(columns=["月份", "套数"])
-        outflow_monthly = _out.groupby("月份")["套数"].sum().reset_index() if not _out.empty else pd.DataFrame(columns=["月份", "套数"])
+        inflow_monthly = _in.groupby("月份")["套数"].sum().reset_index() if not _in.empty else pd.DataFrame(
+            columns=["月份", "套数"])
+        outflow_monthly = _out.groupby("月份")["套数"].sum().reset_index() if not _out.empty else pd.DataFrame(
+            columns=["月份", "套数"])
 
         fig_trend1 = go.Figure()
         if not inflow_monthly.empty:
@@ -282,11 +298,12 @@ with tab1:
         st.plotly_chart(fig_trend1, use_container_width=True)
 
     with col12:
-        # 付款流入流出套数月度折线图
         _pin = df_payment_in_f.dropna(subset=["月份"]) if not df_payment_in_f.empty else df_payment_in_f
         _pout = df_payment_out_f.dropna(subset=["月份"]) if not df_payment_out_f.empty else df_payment_out_f
-        pay_in_monthly = _pin.groupby("月份").size().reset_index(name="套数") if not _pin.empty else pd.DataFrame(columns=["月份", "套数"])
-        pay_out_monthly = _pout.groupby("月份").size().reset_index(name="套数") if not _pout.empty else pd.DataFrame(columns=["月份", "套数"])
+        pay_in_monthly = _pin.groupby("月份").size().reset_index(name="套数") if not _pin.empty else pd.DataFrame(
+            columns=["月份", "套数"])
+        pay_out_monthly = _pout.groupby("月份").size().reset_index(name="套数") if not _pout.empty else pd.DataFrame(
+            columns=["月份", "套数"])
 
         fig_trend2 = go.Figure()
         if not pay_in_monthly.empty:
@@ -308,26 +325,22 @@ with tab1:
         )
         st.plotly_chart(fig_trend2, use_container_width=True)
 
-    # ===== 三、部门区域占比分析 =====
     st.markdown("---")
     st.markdown("## 部门区域占比分析")
 
+
     def make_pie_chart(df, value_col, group_col, title, is_count=False):
-        """生成饼图，显示百分比和具体套数"""
         if df.empty:
             fig = go.Figure()
             fig.update_layout(title=f"{title}（无数据）", height=320)
             return fig
 
         if is_count:
-            # 付款数据：套数 = 行数
             pie_data = df.groupby(group_col).size().reset_index(name="套数")
         else:
-            # 决策数据：套数 = 套数列求和
             pie_data = df.groupby(group_col)[value_col].sum().reset_index()
             pie_data = pie_data.rename(columns={value_col: "套数"})
 
-        # 排除"其他"
         pie_data = pie_data[pie_data[group_col] != "其他"]
 
         if pie_data.empty:
@@ -339,13 +352,10 @@ with tab1:
             pie_data, values="套数", names=group_col,
             title=title, height=320
         )
-        fig.update_traces(
-            textinfo="label+percent+value",
-            textfont_size=12
-        )
+        fig.update_traces(textinfo="label+percent+value", textfont_size=12)
         return fig
 
-    # --- 按组别饼图 ---
+
     st.markdown("### 按组别占比")
     col13, col14 = st.columns(2)
     with col13:
@@ -355,11 +365,12 @@ with tab1:
 
     col15, col16 = st.columns(2)
     with col15:
-        st.plotly_chart(make_pie_chart(df_payment_in_f, None, "组别", "付款流入套数 - 按组别", is_count=True), use_container_width=True)
+        st.plotly_chart(make_pie_chart(df_payment_in_f, None, "组别", "付款流入套数 - 按组别", is_count=True),
+                        use_container_width=True)
     with col16:
-        st.plotly_chart(make_pie_chart(df_payment_out_f, None, "组别", "付款流出套数 - 按组别", is_count=True), use_container_width=True)
+        st.plotly_chart(make_pie_chart(df_payment_out_f, None, "组别", "付款流出套数 - 按组别", is_count=True),
+                        use_container_width=True)
 
-    # --- 按区域饼图 ---
     st.markdown("### 按区域占比")
     col17, col18 = st.columns(2)
     with col17:
@@ -369,11 +380,12 @@ with tab1:
 
     col19, col20 = st.columns(2)
     with col19:
-        st.plotly_chart(make_pie_chart(df_payment_in_f, None, "区域", "付款流入套数 - 按区域", is_count=True), use_container_width=True)
+        st.plotly_chart(make_pie_chart(df_payment_in_f, None, "区域", "付款流入套数 - 按区域", is_count=True),
+                        use_container_width=True)
     with col20:
-        st.plotly_chart(make_pie_chart(df_payment_out_f, None, "区域", "付款流出套数 - 按区域", is_count=True), use_container_width=True)
+        st.plotly_chart(make_pie_chart(df_payment_out_f, None, "区域", "付款流出套数 - 按区域", is_count=True),
+                        use_container_width=True)
 
-    # ===== 四、明细数据 =====
     st.markdown("---")
     st.markdown("## 明细数据")
 
@@ -384,20 +396,29 @@ with tab1:
     )
 
     if detail_type == "决策流入报表":
-        show_cols = [c for c in ["年月周数", "月份", "决策编号", "套数", "主体", "申请人", "组别", "区域", "提交申请时间", "审批类型", "流程状态"] if c in df_inflow_f.columns]
+        show_cols = [c for c in
+                     ["年月周数", "月份", "决策编号", "套数", "主体", "申请人", "组别", "区域", "提交申请时间",
+                      "审批类型", "流程状态"] if c in df_inflow_f.columns]
         detail_df = df_inflow_f[show_cols] if not df_inflow_f.empty else pd.DataFrame()
     elif detail_type == "决策流出报表":
-        show_cols = [c for c in ["年月周数", "月份", "决策编号", "套数", "主体", "申请人", "组别", "区域", "提交申请时间", "审批完成时间", "决策审批时长", "审批类型"] if c in df_outflow_f.columns]
+        show_cols = [c for c in
+                     ["年月周数", "月份", "决策编号", "套数", "主体", "申请人", "组别", "区域", "提交申请时间",
+                      "审批完成时间", "决策审批时长", "审批类型"] if c in df_outflow_f.columns]
         detail_df = df_outflow_f[show_cols] if not df_outflow_f.empty else pd.DataFrame()
     elif detail_type == "付款流入报表":
-        show_cols = [c for c in ["年月周数", "月份", "付款申请编号", "回购业务编号", "所属部门", "项目经理名称", "组别", "区域", "回购金额", "电池SN", "电池型号", "车辆品牌", "付款申请时间", "付款时间"] if c in df_payment_in_f.columns]
+        show_cols = [c for c in
+                     ["年月周数", "月份", "付款申请编号", "回购业务编号", "所属部门", "项目经理名称", "组别", "区域",
+                      "回购金额", "电池SN", "电池型号", "车辆品牌", "付款申请时间", "付款时间"] if
+                     c in df_payment_in_f.columns]
         detail_df = df_payment_in_f[show_cols] if not df_payment_in_f.empty else pd.DataFrame()
     else:
-        show_cols = [c for c in ["年月周数", "月份", "付款申请编号", "回购业务编号", "所属部门", "项目经理名称", "组别", "区域", "回购金额", "电池SN", "电池型号", "车辆品牌", "付款申请时间", "有效付款时间", "付款时长"] if c in df_payment_out_f.columns]
+        show_cols = [c for c in
+                     ["年月周数", "月份", "付款申请编号", "回购业务编号", "所属部门", "项目经理名称", "组别", "区域",
+                      "回购金额", "电池SN", "电池型号", "车辆品牌", "付款申请时间", "有效付款时间", "付款时长"] if
+                     c in df_payment_out_f.columns]
         detail_df = df_payment_out_f[show_cols] if not df_payment_out_f.empty else pd.DataFrame()
 
     st.dataframe(detail_df, use_container_width=True, height=400)
-
 
 # ============================================================
 # 第二页：数据透视表
@@ -405,17 +426,15 @@ with tab1:
 with tab2:
     st.markdown("## 数据透视表")
 
-    # --- 1-4: 按月度统计各项目经理 ---
     st.markdown("### 按月度统计各项目经理")
 
+
     def make_pivot_count(df, name_col, dept_col, value_col, agg_func, title):
-        """生成数据透视表"""
         if df.empty:
             st.markdown(f"**{title}**（无数据）")
             return
 
         work = df.copy()
-        # 筛选有效记录
         work = work[work[name_col].notna() & (work[name_col] != "") & work["月份"].notna()]
         if work.empty:
             st.markdown(f"**{title}**（无数据）")
@@ -437,7 +456,7 @@ with tab2:
                 aggfunc="size",
                 fill_value=0
             )
-        else:  # sum
+        else:
             pivot = work.pivot_table(
                 index=[name_col, dept_col],
                 columns="月份",
@@ -446,7 +465,6 @@ with tab2:
                 fill_value=0
             )
 
-        # 添加总计列
         pivot["总计"] = pivot.sum(axis=1)
         pivot = pivot.sort_values("总计", ascending=False)
 
@@ -454,40 +472,33 @@ with tab2:
         st.dataframe(pivot, use_container_width=True)
         st.markdown("")
 
-    # 1. 决策流出条数（按月度，按项目经理）
+
     make_pivot_count(
         df_outflow_f, "申请人", "所属部门",
         "决策编号", "nunique",
         "1. 各项目经理决策流出条数（月度）"
     )
-
-    # 2. 决策流出套数（按月度，按项目经理）
     make_pivot_count(
         df_outflow_f, "申请人", "所属部门",
         "套数", "sum",
         "2. 各项目经理决策流出套数（月度）"
     )
-
-    # 3. 付款流出条数（按月度，按项目经理）
     make_pivot_count(
         df_payment_out_f, "项目经理名称", "所属部门",
         "回购业务编号", "nunique",
         "3. 各项目经理付款流出条数（月度）"
     )
-
-    # 4. 付款流出套数（按月度，按项目经理）
     make_pivot_count(
         df_payment_out_f, "项目经理名称", "所属部门",
         "电池SN", "size",
         "4. 各项目经理付款流出套数（月度）"
     )
 
-    # --- 5-8: 按年月周数统计套数（只保留2026年） ---
     st.markdown("---")
     st.markdown("### 按年月周数统计套数（2026年）")
 
+
     def make_weekly_pivot(df, value_col, title, is_count=False):
-        """按年月周数统计套数，只保留2026年"""
         if df.empty:
             st.markdown(f"**{title}**（无数据）")
             return
@@ -504,7 +515,6 @@ with tab2:
             summary = work.groupby("年月周数")[value_col].sum().reset_index()
             summary = summary.rename(columns={value_col: "套数"})
 
-        # 添加总计行
         total_row = pd.DataFrame({"年月周数": ["总计"], "套数": [summary["套数"].sum()]})
         summary = pd.concat([summary, total_row], ignore_index=True)
 
@@ -512,21 +522,123 @@ with tab2:
         st.dataframe(summary, use_container_width=True)
         st.markdown("")
 
-    # 5. 决策流入套数
+
     make_weekly_pivot(df_inflow_f, "套数", "5. 决策流入套数（2026年）")
-
-    # 6. 决策流出套数
     make_weekly_pivot(df_outflow_f, "套数", "6. 决策流出套数（2026年）")
-
-    # 7. 付款流入套数
     make_weekly_pivot(df_payment_in_f, None, "7. 付款流入套数（2026年）", is_count=True)
-
-    # 8. 付款流出套数
     make_weekly_pivot(df_payment_out_f, None, "8. 付款流出套数（2026年）", is_count=True)
 
+# ============================================================
+# 第三页：预警机制
+# ============================================================
+with tab3:
+    st.markdown("## 预警机制")
+
+    if df_final_f.empty or "预警级别" not in df_final_f.columns:
+        st.warning("暂无预警数据，请检查 v_终表 是否正确加载")
+    else:
+        # ===== 一、预警总表 =====
+        st.markdown("### 一、预警总表")
+
+        # 自动识别“套数”列：优先 付款套数 > 申请付款套数 > 套数
+        set_cols = [c for c in df_final_f.columns if c in ["付款套数", "申请付款套数", "套数"]]
+        set_col = set_cols[0] if set_cols else None
+
+        warning_stats = df_final_f.groupby("预警级别").agg(
+            条数=("回购业务编号", "nunique"),
+            套数=(set_col, "sum") if set_col else ("回购业务编号", "size")
+        ).reset_index()
+
+        # 确保所有预警级别都存在
+        all_levels = ["红色预警", "橙色预警", "绿色预警"]
+        for level in all_levels:
+            if level not in warning_stats["预警级别"].values:
+                new_row = pd.DataFrame({"预警级别": [level], "条数": [0], "套数": [0]})
+                warning_stats = pd.concat([warning_stats, new_row], ignore_index=True)
+
+        # 按固定顺序显示
+        level_order = {"红色预警": 0, "橙色预警": 1, "绿色预警": 2}
+        warning_stats["排序"] = warning_stats["预警级别"].map(level_order)
+        warning_stats = warning_stats.sort_values("排序").drop("排序", axis=1)
+
+        # 显示标签 + 图标 + 颜色
+        level_labels = {
+            "红色预警": "🔴 红色预警（≥90天）",
+            "橙色预警": "🟠 橙色预警（30-90天）",
+            "绿色预警": "🟢 绿色预警（＜30天）"
+        }
+        level_colors = {
+            "红色预警": "#ffcccc",
+            "橙色预警": "#ffe6cc",
+            "绿色预警": "#d9f2d9"
+        }
+        warning_stats["预警级别"] = warning_stats["预警级别"].map(level_labels)
+
+        # 显示摘要卡片
+        col_r, col_o, col_g = st.columns(3)
+        for col, level in zip([col_r, col_o, col_g], all_levels):
+            row = warning_stats[warning_stats["预警级别"] == level_labels[level]].iloc[0]
+            with col:
+                st.markdown(
+                    f"<div style='background-color:{level_colors[level]}; padding:15px; border-radius:10px; text-align:center'>"
+                    f"<h4>{level_labels[level]}</h4>"
+                    f"<p style='font-size:24px; margin:5px 0'><b>{int(row['条数']):,}</b> 条</p>"
+                    f"<p style='font-size:18px; margin:5px 0'><b>{int(row['套数']):,}</b> 套</p>"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
+
+        st.markdown("")
+        st.dataframe(
+            warning_stats,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "预警级别": st.column_config.TextColumn("预警级别"),
+                "条数": st.column_config.NumberColumn("条数", format="%d"),
+                "套数": st.column_config.NumberColumn("套数", format="%d")
+            }
+        )
+
+        # ===== 二、明细表 =====
+        st.markdown("---")
+        st.markdown("### 二、明细表")
+
+        for level, display_name in [("红色预警", "红色预警（≥90天）"),
+                                    ("橙色预警", "橙色预警（30-90天）"),
+                                    ("绿色预警", "绿色预警（＜30天）")]:
+
+            level_df = df_final_f[df_final_f["预警级别"] == level].copy()
+
+            with st.expander(f"{level_labels[level]} 明细（共 {len(level_df)} 条）", expanded=(level == "红色预警")):
+                if level_df.empty:
+                    st.info(f"暂无 {display_name} 数据")
+                else:
+                    # 优先展示关键列，再展示其他列
+                    priority_cols = ["预警级别", "据今天天数", "回购业务编号", "付款申请编号", "项目经理名称", "组别", "区域"]
+                    if set_col:
+                        priority_cols.append(set_col)
+                    other_cols = [c for c in level_df.columns if c not in priority_cols]
+                    show_cols = [c for c in priority_cols + other_cols if c in level_df.columns]
+
+                    st.dataframe(
+                        level_df[show_cols],
+                        use_container_width=True,
+                        height=300
+                    )
+
+                    csv = level_df.to_csv(index=False).encode('utf-8-sig')
+                    st.download_button(
+                        label=f"下载 {display_name} 数据 (CSV)",
+                        data=csv,
+                        file_name=f"{level}_预警数据_{pd.Timestamp.now().strftime('%Y%m%d')}.csv",
+                        mime="text/csv",
+                        key=f"download_{level}"
+                    )
 
 # ============================================================
 # 底部
 # ============================================================
 st.markdown("---")
-st.caption(f"数据更新时间：{pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')} | 数据来源：{'MySQL' if DB_MODE else 'CSV'}")
+st.caption(
+    f"数据更新时间：{pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')} | 数据来源：{'MySQL' if DB_MODE else 'CSV'}")
