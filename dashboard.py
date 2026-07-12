@@ -69,9 +69,16 @@ def load_data():
     if "图远付款时间" in df_payment_out.columns:
         df_payment_out["图远付款时间"] = pd.to_datetime(df_payment_out["图远付款时间"], errors="coerce")
 
-    # ---- 终表处理：直接使用现有的"据今天天数"字段 ----
-    if "据今天天数" in df_final.columns:
-        df_final["据今天天数"] = pd.to_numeric(df_final["据今天天数"], errors="coerce").fillna(0)
+    # ---- 终表处理：使用"距离今天天数"字段计算预警级别 ----
+    # 兼容列名: "距离今天天数" 或 "据今天天数"
+    days_col = None
+    for col in ["距离今天天数", "据今天天数"]:
+        if col in df_final.columns:
+            days_col = col
+            break
+
+    if days_col:
+        df_final["据今天天数"] = pd.to_numeric(df_final[days_col], errors="coerce").fillna(0)
 
         def get_warning_level(days):
             if pd.isna(days):
@@ -85,6 +92,7 @@ def load_data():
 
         df_final["预警级别"] = df_final["据今天天数"].apply(get_warning_level)
     else:
+        df_final["据今天天数"] = 0
         df_final["预警级别"] = "未知"
 
     # ---- 数值列 ----
@@ -580,7 +588,7 @@ with tab3:
             row = warning_stats[warning_stats["预警级别"] == level_labels[level]].iloc[0]
             with col:
                 st.markdown(
-                    f"<div style='background-color:{level_colors[level]}; padding:15px; border-radius:10px; text-align:center'>"
+                    f"<div stgit push origin master:mainyle='background-color:{level_colors[level]}; padding:15px; border-radius:10px; text-align:center'>"
                     f"<h4>{level_labels[level]}</h4>"
                     f"<p style='font-size:24px; margin:5px 0'><b>{int(row['条数']):,}</b> 条</p>"
                     f"<p style='font-size:18px; margin:5px 0'><b>{int(row['套数']):,}</b> 套</p>"
