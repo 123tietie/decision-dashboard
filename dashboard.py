@@ -670,7 +670,7 @@ with tab3:
                         file_name=f"{level}_预警数据_{pd.Timestamp.now().strftime('%Y%m%d')}.csv",
                         mime="text/csv",
                         key=f"download_{level}"
-                    )git push origin master:main
+                    )
 
 # ============================================================
 # 底部
