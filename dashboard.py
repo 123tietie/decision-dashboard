@@ -587,7 +587,7 @@ with tab3:
 
         warning_stats = df_final_f.groupby("预警级别").agg(
             条数=("回购业务编号", "nunique"),
-            套数=(set_col, "sum") if set_col else ("回购业务编号", "size")
+            套数=("回购业务编号", "count")
         ).reset_index()
 
         all_levels = ["红色预警", "橙色预警", "绿色预警"]
