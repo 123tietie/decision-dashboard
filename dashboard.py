@@ -307,6 +307,56 @@ with tab1:
             "付款时长"].mean() if not df_payment_out_tab1.empty and "付款时长" in df_payment_out_tab1.columns else 0
         st.metric("付款时长", f"{val:.1f} 天")
 
+    st.markdown("### 端对端时效")
+
+    # 1. 决策发起-付款完成时长
+    # 决策流入.决策编号 = 付款流出.回购决策编号 → 有效付款时间 - 提交申请时间
+    if not df_inflow_tab1.empty and not df_payment_out_tab1.empty:
+        _in_keys = df_inflow_tab1[["决策编号", "提交申请时间"]].drop_duplicates(subset=["决策编号"])
+        _in_keys = _in_keys.rename(columns={"决策编号": "回购决策编号"})
+        _pout_keys = df_payment_out_tab1[["回购决策编号", "有效付款时间"]].dropna(subset=["有效付款时间"])
+        _pout_keys = _pout_keys.groupby("回购决策编号")["有效付款时间"].max().reset_index()
+        _merged_e2e1 = _in_keys.merge(_pout_keys, on="回购决策编号", how="inner")
+        _merged_e2e1["决策发起到付款完成"] = (
+            _merged_e2e1["有效付款时间"] - _merged_e2e1["提交申请时间"]
+        ).dt.total_seconds() / 86400
+        avg_e2e1 = _merged_e2e1["决策发起到付款完成"].mean() if not _merged_e2e1.empty else 0
+        cnt_e2e1 = len(_merged_e2e1)
+    else:
+        avg_e2e1 = 0
+        cnt_e2e1 = 0
+
+    # 2. 决策通过-提交付款申请时长
+    # 决策流出.决策编号 = 付款流入.回购决策编号 → 付款申请时间 - 审批完成时间
+    if not df_outflow_tab1.empty and not df_payment_in_tab1.empty:
+        _out_keys = df_outflow_tab1[["决策编号", "审批完成时间"]].drop_duplicates(subset=["决策编号"])
+        _out_keys = _out_keys.rename(columns={"决策编号": "回购决策编号"})
+        _pin_keys = df_payment_in_tab1[["回购决策编号", "付款申请时间"]].dropna(subset=["付款申请时间"])
+        _pin_keys = _pin_keys.groupby("回购决策编号")["付款申请时间"].min().reset_index()
+        _merged_e2e2 = _out_keys.merge(_pin_keys, on="回购决策编号", how="inner")
+        _merged_e2e2["决策通过到提交付款"] = (
+            _merged_e2e2["付款申请时间"] - _merged_e2e2["审批完成时间"]
+        ).dt.total_seconds() / 86400
+        avg_e2e2 = _merged_e2e2["决策通过到提交付款"].mean() if not _merged_e2e2.empty else 0
+        cnt_e2e2 = len(_merged_e2e2)
+    else:
+        avg_e2e2 = 0
+        cnt_e2e2 = 0
+
+    col_e1, col_e2 = st.columns(2)
+    with col_e1:
+        st.metric(
+            "决策发起-付款完成时长",
+            f"{avg_e2e1:.1f} 天" if cnt_e2e1 > 0 else "无数据",
+            delta=f"{cnt_e2e1} 条匹配"
+        )
+    with col_e2:
+        st.metric(
+            "决策通过-提交付款申请时长",
+            f"{avg_e2e2:.1f} 天" if cnt_e2e2 > 0 else "无数据",
+            delta=f"{cnt_e2e2} 条匹配"
+        )
+
     st.markdown("---")
     st.markdown("## 趋势分析")
 
@@ -433,32 +483,27 @@ with tab1:
 
     detail_type = st.radio(
         "选择查看明细",
-        ["决策流入报表", "决策流出报表", "付款流入报表", "付款流出报表"],
+        ["决策流入报表", "决策流出报表", "付款流入报表", "付款流出报表", "决策通过未提交付款明细报表"],
         horizontal=True
     )
 
     if detail_type == "决策流入报表":
-        show_cols = [c for c in
-                     ["年月周数", "月份", "决策编号", "套数", "主体", "申请人", "组别", "区域", "提交申请时间",
-                      "审批类型", "流程状态"] if c in df_inflow_tab1.columns]
-        detail_df = df_inflow_tab1[show_cols] if not df_inflow_tab1.empty else pd.DataFrame()
+        detail_df = df_inflow_tab1.copy() if not df_inflow_tab1.empty else pd.DataFrame()
     elif detail_type == "决策流出报表":
-        show_cols = [c for c in
-                     ["年月周数", "月份", "决策编号", "套数", "主体", "申请人", "组别", "区域", "提交申请时间",
-                      "审批完成时间", "决策审批时长", "审批类型"] if c in df_outflow_tab1.columns]
-        detail_df = df_outflow_tab1[show_cols] if not df_outflow_tab1.empty else pd.DataFrame()
+        detail_df = df_outflow_tab1.copy() if not df_outflow_tab1.empty else pd.DataFrame()
     elif detail_type == "付款流入报表":
-        show_cols = [c for c in
-                     ["年月周数", "月份", "付款申请编号", "回购业务编号", "所属部门", "项目经理名称", "组别", "区域",
-                      "回购金额", "电池SN", "电池型号", "车辆品牌", "付款申请时间", "付款时间"] if
-                     c in df_payment_in_tab1.columns]
-        detail_df = df_payment_in_tab1[show_cols] if not df_payment_in_tab1.empty else pd.DataFrame()
-    else:
-        show_cols = [c for c in
-                     ["年月周数", "月份", "付款申请编号", "回购业务编号", "所属部门", "项目经理名称", "组别", "区域",
-                      "回购金额", "电池SN", "电池型号", "车辆品牌", "付款申请时间", "有效付款时间", "付款时长"] if
-                     c in df_payment_out_tab1.columns]
-        detail_df = df_payment_out_tab1[show_cols] if not df_payment_out_tab1.empty else pd.DataFrame()
+        detail_df = df_payment_in_tab1.copy() if not df_payment_in_tab1.empty else pd.DataFrame()
+    elif detail_type == "付款流出报表":
+        detail_df = df_payment_out_tab1.copy() if not df_payment_out_tab1.empty else pd.DataFrame()
+    elif detail_type == "决策通过未提交付款明细报表":
+        # 决策流出报表中的决策编号在付款流入报表中的回购决策编号没有找到的部分
+        if not df_outflow_tab1.empty and not df_payment_in_tab1.empty:
+            matched_ids = set(df_payment_in_tab1["回购决策编号"].dropna().unique())
+            detail_df = df_outflow_tab1[~df_outflow_tab1["决策编号"].isin(matched_ids)].copy()
+        elif not df_outflow_tab1.empty:
+            detail_df = df_outflow_tab1.copy()
+        else:
+            detail_df = pd.DataFrame()
 
     st.dataframe(detail_df, use_container_width=True, height=400)
 
