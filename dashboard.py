@@ -41,7 +41,7 @@ if Path(".env").exists():
         engine = None
 
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=60)
 def load_data():
     if DB_MODE:
         df_inflow = pd.read_sql("SELECT * FROM v_decision_daily", engine)
