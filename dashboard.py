@@ -13,6 +13,183 @@ from pathlib import Path
 st.set_page_config(page_title="决策付款驾驶舱", layout="wide")
 
 # ============================================================
+# 全局样式注入
+# ============================================================
+st.markdown("""
+<style>
+    /* ---- 字体 ---- */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    html, body, [class*="css"] {
+        font-family: 'Inter', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    /* ---- 主背景 ---- */
+    .stApp {
+        background: linear-gradient(135deg, #f0f4ff 0%, #fafbff 50%, #f0f4ff 100%);
+    }
+
+    /* ---- 侧边栏 ---- */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        border-right: 1px solid rgba(255,255,255,0.05);
+    }
+    section[data-testid="stSidebar"] .stMarkdown h1,
+    section[data-testid="stSidebar"] .stMarkdown h2,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] .stInfo {
+        color: #e0e0e0 !important;
+    }
+    section[data-testid="stSidebar"] .stMultiSelect label {
+        color: #a0a0c0 !important;
+        font-weight: 500;
+    }
+
+    /* ---- Tab 样式 ---- */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background: rgba(255,255,255,0.7);
+        border-radius: 12px;
+        padding: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 8px;
+        padding: 8px 24px;
+        font-weight: 600;
+        font-size: 15px;
+    }
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%) !important;
+        color: white !important;
+    }
+
+    /* ---- DataFrame 表格 ---- */
+    .stDataFrame {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .stDataFrame table {
+        border-radius: 12px;
+    }
+
+    /* ---- 分割线 ---- */
+    hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #cbd5e1, transparent);
+        margin: 24px 0;
+    }
+
+    /* ---- 标题 ---- */
+    h2 {
+        font-weight: 800;
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+    }
+    h3 {
+        font-weight: 700;
+        color: #334155;
+        letter-spacing: -0.3px;
+    }
+
+    /* ---- 按钮 ---- */
+    .stDownloadButton > button {
+        border-radius: 8px;
+        font-weight: 600;
+        border: 2px solid #2563EB;
+        background: white;
+        color: #2563EB;
+        transition: all 0.3s;
+    }
+    .stDownloadButton > button:hover {
+        background: #2563EB;
+        color: white;
+    }
+
+    /* ---- expander ---- */
+    .stExpander {
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# ============================================================
+# 配色方案 & Plotly 模板
+# ============================================================
+COLORS = {
+    "inflow": "#3B82F6",      # 蓝
+    "outflow": "#F97316",     # 橙
+    "pay_in": "#10B981",      # 绿
+    "pay_out": "#EF4444",     # 红
+    "primary": "#2563EB",
+    "purple": "#7C3AED",
+    "dark": "#1E293B",
+    "muted": "#94A3B8",
+    "bg_light": "#F8FAFC",
+}
+
+# 组别配色
+GROUP_COLORS = {
+    "事业二部一组": "#3B82F6",
+    "事业二部二组": "#8B5CF6",
+    "事业二部三组": "#10B981",
+    "事业二部四组": "#F59E0B",
+    "事业二部五组": "#EC4899",
+}
+REGION_COLORS = {
+    "山西": "#3B82F6",
+    "陕西": "#F59E0B",
+}
+
+CHART_LAYOUT = dict(
+    font=dict(family="Inter, Noto Sans SC, Microsoft YaHei", size=13, color="#334155"),
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    margin=dict(l=20, r=20, t=50, b=20),
+    title=dict(font=dict(size=16, color="#1E293B"), x=0.5),
+    xaxis=dict(showgrid=False, zeroline=False, tickfont=dict(size=12)),
+    yaxis=dict(showgrid=True, gridcolor="rgba(148,163,184,0.15)", zeroline=False, tickfont=dict(size=12)),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+                font=dict(size=12), bgcolor="rgba(0,0,0,0)"),
+    hoverlabel=dict(bgcolor="white", font_size=13, bordercolor="#E2E8F0"),
+)
+
+
+def kpi_card(label, value, subtitle="", gradient="linear-gradient(135deg, #2563EB, #7C3AED)", icon=""):
+    """渲染高级KPI卡片"""
+    sub_html = f"<div style='font-size:12px;color:rgba(255,255,255,0.8);margin-top:4px'>{subtitle}</div>" if subtitle else ""
+    icon_html = f"<span style='font-size:28px;opacity:0.6'>{icon}</span>" if icon else ""
+    st.markdown(
+        f"""
+        <div style='
+            background: {gradient};
+            border-radius: 16px;
+            padding: 20px 22px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 100px;
+        '>
+            <div style='display:flex;justify-content:space-between;align-items:flex-start'>
+                <div>
+                    <div style='font-size:13px;font-weight:500;opacity:0.85;letter-spacing:0.5px'>{label}</div>
+                    <div style='font-size:30px;font-weight:800;margin-top:6px;letter-spacing:-1px'>{value}</div>
+                    {sub_html}
+                </div>
+                {icon_html}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# ============================================================
 # 数据加载：本地用数据库，云端用CSV（自动检测）
 # ============================================================
 CSV_DIR = Path("data/export")
@@ -190,9 +367,34 @@ with st.spinner("加载数据中..."):
 
 # 数据源标识
 if DB_MODE:
-    st.sidebar.info("数据源：本地数据库")
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("📊 **数据源：** 本地数据库")
 else:
-    st.sidebar.info("数据源：CSV文件")
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("📊 **数据源：** CSV文件")
+
+# ============================================================
+# 页面标题横幅
+# ============================================================
+st.markdown(
+    """
+    <div style='
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        border-radius: 16px;
+        padding: 24px 32px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    '>
+        <h1 style='color:white;font-size:28px;font-weight:800;margin:0;letter-spacing:1px'>
+            🚀 决策付款驾驶舱
+        </h1>
+        <p style='color:rgba(255,255,255,0.6);font-size:14px;margin:6px 0 0 0'>
+            实时追踪决策流入流出与付款全链路
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # ============================================================
 # 侧边栏筛选器
@@ -273,39 +475,39 @@ with tab1:
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         val = df_inflow_tab1["决策编号"].nunique() if not df_inflow_tab1.empty else 0
-        st.metric("决策流入条数", f"{val:,}")
+        kpi_card("决策流入条数", f"{val:,}", "累计申请决策", "linear-gradient(135deg, #3B82F6, #1D4ED8)", "📥")
     with col2:
         val = df_inflow_tab1["套数"].sum() if not df_inflow_tab1.empty else 0
-        st.metric("决策流入套数", f"{val:,.0f}")
+        kpi_card("决策流入套数", f"{val:,.0f}", "累计申请套数", "linear-gradient(135deg, #60A5FA, #3B82F6)", "📦")
     with col3:
         val = df_outflow_tab1["决策编号"].nunique() if not df_outflow_tab1.empty else 0
-        st.metric("决策流出条数", f"{val:,}")
+        kpi_card("决策流出条数", f"{val:,}", "已审批通过", "linear-gradient(135deg, #F97316, #EA580C)", "📤")
     with col4:
         val = df_outflow_tab1["套数"].sum() if not df_outflow_tab1.empty else 0
-        st.metric("决策流出套数", f"{val:,.0f}")
+        kpi_card("决策流出套数", f"{val:,.0f}", "已审批套数", "linear-gradient(135deg, #FB923C, #F97316)", "📦")
     with col5:
         val = df_outflow_tab1[
             "决策审批时长"].mean() if not df_outflow_tab1.empty and "决策审批时长" in df_outflow_tab1.columns else 0
-        st.metric("决策审批时长", f"{val:.1f} 天")
+        kpi_card("决策审批时长", f"{val:.1f} 天", "平均审批周期", "linear-gradient(135deg, #6366F1, #4F46E5)", "⏱️")
 
     st.markdown("### 付款情况")
     col6, col7, col8, col9, col10 = st.columns(5)
     with col6:
         val = df_payment_in_tab1["回购业务编号"].nunique() if not df_payment_in_tab1.empty else 0
-        st.metric("付款流入条数", f"{val:,}")
+        kpi_card("付款流入条数", f"{val:,}", "累计申请付款", "linear-gradient(135deg, #10B981, #059669)", "💰")
     with col7:
         val = len(df_payment_in_tab1) if not df_payment_in_tab1.empty else 0
-        st.metric("付款流入套数", f"{val:,}")
+        kpi_card("付款流入套数", f"{val:,}", "累计申请套数", "linear-gradient(135deg, #34D399, #10B981)", "📦")
     with col8:
         val = df_payment_out_tab1["回购业务编号"].nunique() if not df_payment_out_tab1.empty else 0
-        st.metric("付款流出条数", f"{val:,}")
+        kpi_card("付款流出条数", f"{val:,}", "已完成付款", "linear-gradient(135deg, #EF4444, #DC2626)", "💸")
     with col9:
         val = len(df_payment_out_tab1) if not df_payment_out_tab1.empty else 0
-        st.metric("付款流出套数", f"{val:,}")
+        kpi_card("付款流出套数", f"{val:,}", "已完成套数", "linear-gradient(135deg, #F87171, #EF4444)", "📦")
     with col10:
         val = df_payment_out_tab1[
             "付款时长"].mean() if not df_payment_out_tab1.empty and "付款时长" in df_payment_out_tab1.columns else 0
-        st.metric("付款时长", f"{val:.1f} 天")
+        kpi_card("付款时长", f"{val:.1f} 天", "平均付款周期", "linear-gradient(135deg, #F59E0B, #D97706)", "⏱️")
 
     st.markdown("### 端对端时效")
 
@@ -345,16 +547,20 @@ with tab1:
 
     col_e1, col_e2 = st.columns(2)
     with col_e1:
-        st.metric(
+        kpi_card(
             "决策发起-付款完成时长",
             f"{avg_e2e1:.1f} 天" if cnt_e2e1 > 0 else "无数据",
-            delta=f"{cnt_e2e1} 条匹配"
+            f"{cnt_e2e1} 条匹配" if cnt_e2e1 > 0 else "暂无匹配数据",
+            "linear-gradient(135deg, #6366F1, #8B5CF6)",
+            "🔗"
         )
     with col_e2:
-        st.metric(
+        kpi_card(
             "决策通过-提交付款申请时长",
             f"{avg_e2e2:.1f} 天" if cnt_e2e2 > 0 else "无数据",
-            delta=f"{cnt_e2e2} 条匹配"
+            f"{cnt_e2e2} 条匹配" if cnt_e2e2 > 0 else "暂无匹配数据",
+            "linear-gradient(135deg, #8B5CF6, #A855F7)",
+            "🔗"
         )
 
     st.markdown("---")
@@ -374,18 +580,24 @@ with tab1:
             fig_trend1.add_trace(go.Scatter(
                 x=inflow_monthly["月份"], y=inflow_monthly["套数"],
                 mode="lines+markers", name="决策流入",
-                line=dict(color="#1f77b4", width=3)
+                line=dict(color=COLORS["inflow"], width=3, shape="spline"),
+                fill="tozeroy", fillcolor="rgba(59,130,246,0.12)",
+                marker=dict(size=8, color=COLORS["inflow"], line=dict(width=2, color="white")),
+                hovertemplate="<b>%{x}</b><br>决策流入: <b>%{y}</b> 套<extra></extra>"
             ))
         if not outflow_monthly.empty:
             fig_trend1.add_trace(go.Scatter(
                 x=outflow_monthly["月份"], y=outflow_monthly["套数"],
                 mode="lines+markers", name="决策流出",
-                line=dict(color="#ff7f0e", width=3)
+                line=dict(color=COLORS["outflow"], width=3, shape="spline"),
+                fill="tozeroy", fillcolor="rgba(249,115,22,0.12)",
+                marker=dict(size=8, color=COLORS["outflow"], line=dict(width=2, color="white")),
+                hovertemplate="<b>%{x}</b><br>决策流出: <b>%{y}</b> 套<extra></extra>"
             ))
         fig_trend1.update_layout(
             title="决策流入流出套数月度趋势",
             xaxis_title="月份", yaxis_title="套数",
-            height=350, hovermode="x unified"
+            height=380, hovermode="x unified", **CHART_LAYOUT
         )
         st.plotly_chart(fig_trend1, use_container_width=True)
 
@@ -402,18 +614,24 @@ with tab1:
             fig_trend2.add_trace(go.Scatter(
                 x=pay_in_monthly["月份"], y=pay_in_monthly["套数"],
                 mode="lines+markers", name="付款流入",
-                line=dict(color="#2ca02c", width=3)
+                line=dict(color=COLORS["pay_in"], width=3, shape="spline"),
+                fill="tozeroy", fillcolor="rgba(16,185,129,0.12)",
+                marker=dict(size=8, color=COLORS["pay_in"], line=dict(width=2, color="white")),
+                hovertemplate="<b>%{x}</b><br>付款流入: <b>%{y}</b> 套<extra></extra>"
             ))
         if not pay_out_monthly.empty:
             fig_trend2.add_trace(go.Scatter(
                 x=pay_out_monthly["月份"], y=pay_out_monthly["套数"],
                 mode="lines+markers", name="付款流出",
-                line=dict(color="#d62728", width=3)
+                line=dict(color=COLORS["pay_out"], width=3, shape="spline"),
+                fill="tozeroy", fillcolor="rgba(239,68,68,0.12)",
+                marker=dict(size=8, color=COLORS["pay_out"], line=dict(width=2, color="white")),
+                hovertemplate="<b>%{x}</b><br>付款流出: <b>%{y}</b> 套<extra></extra>"
             ))
         fig_trend2.update_layout(
             title="付款流入流出套数月度趋势",
             xaxis_title="月份", yaxis_title="套数",
-            height=350, hovermode="x unified"
+            height=380, hovermode="x unified", **CHART_LAYOUT
         )
         st.plotly_chart(fig_trend2, use_container_width=True)
 
@@ -424,7 +642,7 @@ with tab1:
     def make_pie_chart(df, value_col, group_col, title, is_count=False):
         if df.empty:
             fig = go.Figure()
-            fig.update_layout(title=f"{title}（无数据）", height=320)
+            fig.update_layout(title=f"{title}（无数据）", height=340, **CHART_LAYOUT)
             return fig
 
         if is_count:
@@ -437,14 +655,42 @@ with tab1:
 
         if pie_data.empty:
             fig = go.Figure()
-            fig.update_layout(title=f"{title}（无数据）", height=320)
+            fig.update_layout(title=f"{title}（无数据）", height=340, **CHART_LAYOUT)
             return fig
 
-        fig = px.pie(
-            pie_data, values="套数", names=group_col,
-            title=title, height=320
+        # 选择配色方案
+        if group_col == "组别":
+            color_map = GROUP_COLORS
+        elif group_col == "区域":
+            color_map = REGION_COLORS
+        else:
+            color_map = None
+
+        colors_list = [color_map.get(name, "#94A3B8") for name in pie_data[group_col]] if color_map else None
+
+        total = pie_data["套数"].sum()
+
+        fig = go.Figure(go.Pie(
+            labels=pie_data[group_col],
+            values=pie_data["套数"],
+            hole=0.45,
+            textinfo="label+percent",
+            textposition="outside",
+            textfont=dict(size=13, color="#334155"),
+            marker=dict(colors=colors_list, line=dict(color="white", width=2)),
+            hovertemplate="<b>%{label}</b><br>套数: <b>%{value}</b><br>占比: <b>%{percent}</b><extra></extra>",
+            pull=[0.05 if i == pie_data["套数"].idxmax() else 0 for i in range(len(pie_data))],
+        ))
+        fig.update_layout(
+            title=title,
+            height=340,
+            showlegend=True,
+            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5,
+                        font=dict(size=12)),
+            annotations=[dict(text=f"<b>{total:,}</b><br>总计", x=0.5, y=0.5,
+                              font=dict(size=18, color="#1E293B"), showarrow=False)],
+            **{k: v for k, v in CHART_LAYOUT.items() if k != "legend"}
         )
-        fig.update_traces(textinfo="label+percent+value", textfont_size=12)
         return fig
 
 
@@ -651,9 +897,14 @@ with tab3:
             "绿色预警": "🟢 绿色预警（＜30天）"
         }
         level_colors = {
-            "红色预警": "#ffcccc",
-            "橙色预警": "#ffe6cc",
-            "绿色预警": "#d9f2d9"
+            "红色预警": "linear-gradient(135deg, #FEE2E2, #FECACA)",
+            "橙色预警": "linear-gradient(135deg, #FFEDD5, #FED7AA)",
+            "绿色预警": "linear-gradient(135deg, #D1FAE5, #A7F3D0)"
+        }
+        level_accent = {
+            "红色预警": "#EF4444",
+            "橙色预警": "#F97316",
+            "绿色预警": "#10B981"
         }
         warning_stats["预警级别"] = warning_stats["预警级别"].map(level_labels)
 
@@ -662,11 +913,27 @@ with tab3:
             row = warning_stats[warning_stats["预警级别"] == level_labels[level]].iloc[0]
             with col:
                 st.markdown(
-                    f"<div style='background-color:{level_colors[level]}; padding:15px; border-radius:10px; text-align:center'>"
-                    f"<h4>{level_labels[level]}</h4>"
-                    f"<p style='font-size:24px; margin:5px 0'><b>{int(row['条数']):,}</b> 条</p>"
-                    f"<p style='font-size:18px; margin:5px 0'><b>{int(row['套数']):,}</b> 套</p>"
-                    f"</div>",
+                    f"""
+                    <div style='
+                        background: {level_colors[level]};
+                        border-left: 5px solid {level_accent[level]};
+                        border-radius: 14px;
+                        padding: 22px 20px;
+                        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+                        text-align: center;
+                    '>
+                        <div style='font-size:15px;font-weight:700;color:{level_accent[level]};margin-bottom:8px'>
+                            {level_labels[level]}
+                        </div>
+                        <div style='font-size:36px;font-weight:800;color:{level_accent[level]};letter-spacing:-1px'>
+                            {int(row['条数']):,}
+                        </div>
+                        <div style='font-size:13px;color:#64748B;margin-top:4px'>条</div>
+                        <div style='font-size:22px;font-weight:700;color:{level_accent[level]};margin-top:10px'>
+                            {int(row['套数']):,} <span style='font-size:13px;font-weight:500;color:#64748B'>套</span>
+                        </div>
+                    </div>
+                    """,
                     unsafe_allow_html=True
                 )
 
@@ -721,5 +988,11 @@ with tab3:
 # 底部
 # ============================================================
 st.markdown("---")
-st.caption(
-    f"数据更新时间：{pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')} | 数据来源：{'MySQL' if DB_MODE else 'CSV'}")
+st.markdown(
+    f"<div style='text-align:center;color:#94A3B8;font-size:13px;padding:12px'>"
+    f"📅 数据更新时间：{pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')} "
+    f"&nbsp;|&nbsp; 🗄️ 数据来源：{'MySQL' if DB_MODE else 'CSV'} "
+    f"&nbsp;|&nbsp; 🚀 决策付款驾驶舱"
+    f"</div>",
+    unsafe_allow_html=True
+)
